@@ -6,7 +6,7 @@ void lr_init(struct line_reader *lr, FILE *f){
 	lr->buf = NULL;
 	lr->siz = 0;
 }
- 
+
 /*
  * Reads the next line. If successful, returns a pointer to the line,
  * and sets *len to the number of characters, at least 1. The result is
@@ -21,38 +21,40 @@ char *next_line(struct line_reader *lr, size_t *len){
 	size_t newsiz = 0;
 	int c = 0;
 	char *newbuf = NULL;
- 
+
 	*len = 0;			/* Start with empty line. */
-	for (;;) {
+	for(;;){
 		c = fgetc(lr->f);	/* Read next character. */
-		if (ferror(lr->f))
+		if(ferror(lr->f)){
 			return NULL;
- 
-		if (c == EOF) {
-			/*
-			 * End of file is also end of last line,
+		}
+		if(EOF == c){
+			/* End of file is also end of last line,
 		`	 * unless this last line would be empty.
 			 */
-			if (*len == 0)
+			if(0 == *len){
 				return NULL;
-			else
+			}else{
 				return lr->buf;
-		} else {
+			}
+		}else{
 			/* Append c to the buffer. */
-			if (*len == lr->siz) {
+			if(*len == lr->siz){
 				/* Need a bigger buffer! */
 				newsiz = lr->siz + 4096;
 				newbuf = realloc(lr->buf, newsiz);
-				if (newbuf == NULL)
+				if(NULL == newbuf){
 					return NULL;
+				}
 				lr->buf = newbuf;
 				lr->siz = newsiz;
 			}
 			lr->buf[(*len)++] = c;
- 
+
 			/* '\n' is end of line. */
-			if (c == '\n')
+			if('\n' == c){
 				return lr->buf;
+			}
 		}
 	}
 }

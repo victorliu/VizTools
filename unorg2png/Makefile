@@ -1,9 +1,8 @@
 #CFLAGS = -O0 -ggdb
 CFLAGS = -O3
 
-
-all: deltri.o lodepng.o read_data_1d.o line_reader.o predicates.o main.cpp
-	$(CXX) $(CFLAGS) -I. deltri.o lodepng.o read_data_1d.o line_reader.o predicates.o main.cpp -o unorg_data_render
+unorg2png: deltri.o lodepng.o read_data_1d.o line_reader.o predicates.o main.cpp
+	$(CXX) $(CFLAGS) -I.. deltri.o lodepng.o read_data_1d.o line_reader.o predicates.o main.cpp -o unorg2png
 deltri.o: deltri.c
 	$(CC) -c $(CFLAGS) deltri.c -o deltri.o
 lodepng.o: lodepng.cpp
@@ -16,4 +15,4 @@ predicates.o: predicates.c
 	$(CC) -c $(CFLAGS) predicates.c -o predicates.o
 
 clean:
-	rm -f *.o unorg_data_render
+	rm -f *.o unorg2png

@@ -119,12 +119,23 @@ void colormap(const colormap_info_struct *info, double z, unsigned char *rgba){
 	}
 }
 
+static unsigned long x=123456789, y=362436069, z=521288629;
+unsigned long xorshf96(void){ // period 2^96-1
+	unsigned long t;
+	x ^= x << 16;
+	x ^= x >> 5;
+	x ^= x << 1;
+
+	t = x;
+	x = y;
+	y = z;
+	z = t ^ x ^ y;
+
+	return z;
+}
 
 static int rand_int(int n) {
-	const int limit = RAND_MAX - RAND_MAX % n;
-	int rnd;
-	do{ rnd = rand(); }while (rnd >= limit);
-	return rnd % n;
+	return xorshf96() % n;
 }
 
 /* go through and find some extremal points */
@@ -151,12 +162,12 @@ void fixup_data(int ndata, double *data, double scalex, double scaley){
 		}
 	}
 	std::sort(ind, ind+4);
-	/*
-	fprintf(stderr, "Extremal points:\n");
+	
+	printf("Extremal points:\n");
 	for(int m = 0; m < 4; ++m){
 		printf("%d\t%g, %g\n", ind[m], data[3*ind[m]+0], data[3*ind[m]+1]);
 	}
-	*/
+	fflush(stdout);
 
 	// swap them into place
 	for(int m = 0; m < 4; ++m){
@@ -342,7 +353,7 @@ int main(int argc, char *argv[]){
 		return EXIT_FAILURE;
     }
 
-	printf("Note: zrange = [ %.14g, %.14g ]\n", zbounds[0], zbounds[1]);
+	printf("Note: zrange = [ %.14g, %.14g ]\n", zbounds[0], zbounds[1]); fflush(stdout);
 
 	const double dt_scale_x = (double)pxwidth/xrange;
 	const double dt_scale_y = (double)pxheight/yrange;
